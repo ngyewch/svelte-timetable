@@ -41,8 +41,8 @@
                 const duration = Math.floor(Math.random() * (24 - hour)) + 1;
                 const sampleRate = Math.floor(Math.random() * 10) + 1;
                 timetable.addEntry(groupName, sensor, {
-                    hour: hour,
-                    duration: duration,
+                    startTime: `${String(hour).padStart(2, '0')}:00`,
+                    duration: `PT${duration}H`,
                     text: `${sampleRate}m`,
                 });
             }

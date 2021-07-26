@@ -74,6 +74,31 @@
         }
     }
 
+    class Entry {
+
+        constructor(startTime, duration, text) {
+            this._startTime = moment(startTime, "HH:mm");
+            this._duration = moment.duration(duration);
+            if (!this._startTime.isValid()) {
+                throw "invalid startTime";
+            }
+            if (!this._duration.isValid()) {
+                throw "invalid duration";
+            }
+            this.startTime = startTime;
+            this.duration = duration;
+            this.text = text;
+        }
+
+        getLeft() {
+            return ((this._startTime.hours() + this._startTime.minutes() / 60) * 100 / 24) + '%';
+        }
+
+        getWidth() {
+            return (this._duration.asHours() * 100 / 24) + '%';
+        }
+    }
+
     function getGroup(groupName) {
         for (let i = 0; i < groups.length; i++) {
             const group = groups[i];
@@ -106,7 +131,7 @@
     export function addEntry(groupName, entityName, entry) {
         const group = addGroup(groupName);
         const entity = group.addEntity(entityName);
-        entity.addEntry(entry)
+        entity.addEntry(new Entry(entry.startTime, entry.duration, entry.text));
     }
 
     function getOption(config, key, defaultValue) {
@@ -179,7 +204,7 @@
                     {#each group.entities as entity}
                         <div class="timeline">
                             {#each entity.entries as entry}
-                                <div class="time-entry" style="left: {entry.hour * 100 / 24}%; width: {entry.duration * 100 / 24}%;">
+                                <div class="time-entry" style="left: {entry.getLeft()}; width: {entry.getWidth()};">
                                     <div class="time-entry-content">
                                         {entry.text}
                                     </div>
