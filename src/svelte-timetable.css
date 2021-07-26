@@ -38,13 +38,13 @@
 .timetable .timeline-container .header .timeline-header {
     display: flex;
     flex-direction: row;
-    width: 2400px;
+    width: 1200px;
     height: 100%;
 }
 
 .timetable .timeline-container .timeline-header .timeline-header-cell {
     display: flex;
-    width: 100px;
+    width: 50px;
     height: 100%;
     vertical-align: bottom;
     font-size: smaller;
@@ -87,10 +87,10 @@
 }
 
 .timetable .timeline-container .timeline {
-    width: 2400px;
+    width: 1200px;
     height: 50px;
     background-repeat: repeat-x;
-    background-size: 100px 100%;
+    background-size: 50px 100%;
 }
 
 .timetable .timeline-container .timeline:nth-child(odd) {
