@@ -1,64 +1,89 @@
-body {
+.timetable {
     font-family: sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 100vh;
 }
 
-.timetable {
+.timetable .timetable-container {
     display: flex;
     flex-direction: row;
-    border-color: #e5e5e5;
-    border-style: solid;
-    border-width: 1px;
+    max-height: fit-content;
 }
 
 .timetable .label-container {
-    vertical-align: top;
-}
-
-.timetable .label-container .label-header {
-    height: 50px;
-}
-
-.timetable .label-container .label {
-    display: flex;
-    align-items: center;
-    height: 50px;
-}
-
-.timetable .label-container .label {
-    vertical-align: middle;
-    margin: 0 0.5em;
-    height: 50px;
 }
 
 .timetable .timeline-container {
     flex-grow: 1;
+}
+
+/* */
+
+.timetable .header {
+    position: fixed;
+    background-color: white;
+    z-index: 2;
+    height: 50px;
+}
+
+.timetable .label-container .header {
+    width: 100%;
+}
+
+.timetable .timeline-container .header {
     overflow-x: auto;
 }
 
-.timetable .timeline-container .timeline-header {
+.timetable .timeline-container .header .timeline-header {
     display: flex;
     flex-direction: row;
     width: 2400px;
-    height: 50px;
+    height: 100%;
 }
 
 .timetable .timeline-container .timeline-header .timeline-header-cell {
     display: flex;
-    align-items: flex-end;
     width: 100px;
-    height: 50px;
+    height: 100%;
     vertical-align: bottom;
     font-size: smaller;
 }
 
-.timetable .timeline-container .timeline-group-header {
-    width: 2400px;
-    height: 50px;
-    display: flex;
+.timetable .timeline-container .timeline-header .timeline-header-cell div {
+    align-self: flex-end;
 }
 
-.timetable .timeline-container .timeline-group-header .timeline-group-header-content {
-    align-self: flex-end;
+.timetable .header-padding {
+    height: 50px;
+}
+
+/* */
+
+.timetable .label-container .group-header {
+}
+
+.timetable .timeline-container .group-header {
+    display: flex;
+    align-items: baseline;
+    margin: 0 0.5em;
+}
+
+/* */
+
+.timetable .row {
+    height: 50px;
+}
+
+.timetable .label-container .row {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 0.5em;
+}
+
+.timetable .timeline-container .group {
+    overflow-x: hidden;
 }
 
 .timetable .timeline-container .timeline {
@@ -84,9 +109,12 @@ body {
     align-items: center;
     position: relative;
     top: 2px;
-    height: 46px;
-    z-index: 2;
-    background-color: red;
+    height: 44px;
+    z-index: 1;
+    background-color: #dddddd;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #bbbbbb;
 }
 
 .timetable .timeline-container .timeline .time-entry .time-entry-content {
@@ -97,5 +125,5 @@ body {
     text-overflow: ellipsis;
     text-align: center;
     font-size: 10pt;
-    color: white;
+    color: black;
 }

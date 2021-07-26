@@ -1,10 +1,15 @@
 <script>
     import moment from 'moment';
+    import ResizeObserver from 'svelte-resize-observer';
 
     export let options = {};
 
+    let el;
     let hours = [];
     let groups = [];
+    let containerWidth = null;
+    let labelWidth = null;
+    let timelineWidth = null;
 
     $: {
         let startHour = parseInt(getOption(options, 'startHour', 0));
@@ -21,6 +26,12 @@
             hours.push(hour);
             hour = (hour + 1) % 24;
         } while ((hour !== endHour) && (hours.length < 24));
+    }
+
+    $: {
+        if ((containerWidth !== null) && (labelWidth !== null)) {
+            timelineWidth = containerWidth - labelWidth;
+        }
     }
 
     class Group {
@@ -55,6 +66,11 @@
 
         constructor(name) {
             this.name = name;
+            this.entries = [];
+        }
+
+        addEntry(entry) {
+            this.entries.push(entry);
         }
     }
 
@@ -78,14 +94,19 @@
         return group;
     }
 
+    export function clear() {
+        groups = [];
+    }
+
     export function addEntity(groupName, entityName) {
         const group = addGroup(groupName);
         return group.addEntity(entityName);
     }
 
-    export function addEntry(groupName, entityName) {
+    export function addEntry(groupName, entityName, entry) {
         const group = addGroup(groupName);
         const entity = group.addEntity(entityName);
+        entity.addEntry(entry)
     }
 
     function getOption(config, key, defaultValue) {
@@ -93,7 +114,7 @@
             return defaultValue;
         }
         const value = config[key];
-        if ((value === null) || (typeof(value) === 'undefined')) {
+        if ((value === null) || (typeof (value) === 'undefined')) {
             return defaultValue;
         }
         return value;
@@ -103,43 +124,71 @@
         const m = moment().hours(hour).minutes(0).seconds(0).milliseconds(0);
         return m.format("HHmm");
     }
+
+    function onScroll(scrollLeft) {
+        if (!el) {
+            return;
+        }
+        const els = el.getElementsByClassName("group");
+        for (let i = 0; i < els.length; i++) {
+            const groupEl = els[i];
+            groupEl.scrollLeft = scrollLeft;
+        }
+    }
 </script>
 
-<div class="timetable">
-    <div class="label-container">
-        <div class="label">
-        </div>
-        {#each groups as group}
-            <div class="label">
+<div bind:this={el} class="timetable">
+    <ResizeObserver on:resize={e => containerWidth = e.detail.target.clientWidth}/>
+    <div class="timetable-container">
+        <div class="label-container">
+            <ResizeObserver on:resize={e => labelWidth = e.detail.target.clientWidth}/>
+            <div class="header">
             </div>
-            {#each group.entities as entity}
-                <div class="label">
-                    {entity.name}
-                </div>
-            {/each}
-        {/each}
-    </div>
-    <div class="timeline-container">
-        <div class="timeline-header">
-            {#each hours as hour}
-                <div class="timeline-header-cell">{formatHour(hour)}</div>
-            {/each}
-        </div>
-        {#each groups as group}
-            <div class="timeline-group-header">
-                <div class="timeline-group-header-content">
-                    {group.name}
-                </div>
+            <div class="header-padding">
             </div>
-            {#each group.entities as entity}
-                <div class="timeline">
-                    <div class="time-entry" style="width: 10%; left: 10%;">
-                        <div class="time-entry-content">
-                            boohoo hahaha hahahah this is a long sentence
-                        </div>
+            {#each groups as group}
+                <div class="row group-header">
+                </div>
+                {#each group.entities as entity}
+                    <div class="row">
+                        {entity.name}
                     </div>
+                {/each}
+            {/each}
+        </div>
+        <div class="timeline-container">
+            <div class="header" style="width: {timelineWidth}px;"
+                 on:scroll={e => onScroll(e.target.scrollLeft)}>
+                <div class="timeline-header">
+                    {#each hours as hour}
+                        <div class="timeline-header-cell">
+                            <div>
+                                {formatHour(hour)}
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+            <div class="header-padding">
+            </div>
+            {#each groups as group}
+                <div class="row group-header">
+                    <h3>{group.name}</h3>
+                </div>
+                <div class="group" style="width: {timelineWidth}px;">
+                    {#each group.entities as entity}
+                        <div class="timeline">
+                            {#each entity.entries as entry}
+                                <div class="time-entry" style="left: {entry.hour * 100 / 24}%; width: {entry.duration * 100 / 24}%;">
+                                    <div class="time-entry-content">
+                                        {entry.text}
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/each}
                 </div>
             {/each}
-        {/each}
+        </div>
     </div>
 </div>
