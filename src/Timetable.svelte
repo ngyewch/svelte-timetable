@@ -1,21 +1,20 @@
 <script lang="ts">
-    import moment from 'moment';
+    import {format} from 'date-fns';
     import ResizeObserver from 'svelte-resize-observer';
 
-    import {Entity, Entry, Group} from './Timetable';
+    import type {Group} from './timetable';
 
-    export let options = {};
+    export let startHour: number = 0;
+    export let endHour: number = 0;
+    export let groups: Group[] = [];
 
     let el: HTMLElement;
-    let hours = [];
-    let groups = [];
-    let containerWidth = null;
-    let labelWidth = null;
-    let timelineWidth = null;
+    let hours: number[] = [];
+    let containerWidth: number | null = null;
+    let labelWidth: number | null = null;
+    let timelineWidth: number | null = null;
 
     $: {
-        let startHour = parseInt(getOption(options, 'startHour', 0));
-        let endHour = parseInt(getOption(options, 'endHour', 0));
         if (isNaN(startHour) || (startHour < 0) || (startHour > 23)) {
             startHour = 0;
         }
@@ -36,58 +35,11 @@
         }
     }
 
-    function getGroup(groupName) {
-        for (let i = 0; i < groups.length; i++) {
-            const group = groups[i];
-            if (group.name === groupName) {
-                return group;
-            }
-        }
-        return null;
+    function formatHour(hour: number) {
+        return format(new Date().setHours(hour, 0, 0, 0), 'HHmm');
     }
 
-    function addGroup(groupName) {
-        let group = getGroup(groupName);
-        if (group === null) {
-            group = new Group(groupName);
-            groups.push(group);
-            groups = [...groups];
-        }
-        return group;
-    }
-
-    export function clear() {
-        groups = [];
-    }
-
-    export function addEntity(groupName, entityName) {
-        const group = addGroup(groupName);
-        return group.addEntity(entityName);
-    }
-
-    export function addEntry(groupName, entityName, entry) {
-        const group = addGroup(groupName);
-        const entity = group.addEntity(entityName);
-        entity.addEntry(new Entry(entry.startTime, entry.duration, entry.text));
-    }
-
-    function getOption(config, key, defaultValue) {
-        if (!config || !(key in config) || !config.hasOwnProperty(key)) {
-            return defaultValue;
-        }
-        const value = config[key];
-        if ((value === null) || (typeof (value) === 'undefined')) {
-            return defaultValue;
-        }
-        return value;
-    }
-
-    function formatHour(hour) {
-        const m = moment().hours(hour).minutes(0).seconds(0).milliseconds(0);
-        return m.format("HHmm");
-    }
-
-    function onScroll(e: UIEvent) {
+    function onScroll(e: Event) {
         if (!el) {
             return;
         }
@@ -101,19 +53,23 @@
         }
     }
 
-    function onContainerResize(e: UIEvent) {
-        // TODO
-        //containerWidth = e.detail.target.clientWidth
+    function onContainerResize(e: CustomEvent) {
+        const detail = e.detail;
+        if (detail instanceof HTMLDivElement) {
+            containerWidth = detail.clientWidth;
+        }
     }
 
-    function onLabelResize(e: UIEvent) {
-        // TODO
-        //labelWidth = e.detail.target.clientWidth
+    function onLabelResize(e: CustomEvent) {
+        const detail = e.detail;
+        if (detail instanceof HTMLDivElement) {
+            labelWidth = detail.clientWidth;
+        }
     }
 </script>
 
 <div bind:this={el} class="timetable">
-    <ResizeObserver on:resize={e => onLabelResize(e)}/>
+    <ResizeObserver on:resize={e => onContainerResize(e)}/>
     <div class="timetable-container">
         <div class="label-container">
             <ResizeObserver on:resize={e => onLabelResize(e)}/>
@@ -136,10 +92,8 @@
                  on:scroll={e => onScroll(e)}>
                 <div class="timeline-header">
                     {#each hours as hour}
-                        <div class="timeline-header-cell">
-                            <div>
-                                {formatHour(hour)}
-                            </div>
+                        <div class="timeline-header-cell {hour % 2 ? 'even' : 'odd'}">
+                            {formatHour(hour)}
                         </div>
                     {/each}
                 </div>
@@ -167,3 +121,141 @@
         </div>
     </div>
 </div>
+
+<style>
+    .timetable {
+        font-family: sans-serif;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+
+    .timetable .timetable-container {
+        display: flex;
+        flex-direction: row;
+        max-height: fit-content;
+    }
+
+    .timetable .label-container {
+    }
+
+    .timetable .timeline-container {
+        flex-grow: 1;
+    }
+
+    /* */
+
+    .timetable .header {
+        position: absolute;
+        background-color: white;
+        z-index: 2;
+        height: 50px;
+    }
+
+    .timetable .label-container .header {
+        width: 100%;
+    }
+
+    .timetable .timeline-container .header {
+        overflow-x: auto;
+    }
+
+    .timetable .timeline-container .header .timeline-header {
+        display: flex;
+        flex-direction: row;
+        width: 1200px;
+        height: 100%;
+    }
+
+    .timetable .timeline-container .timeline-header .timeline-header-cell {
+        display: table-cell;
+        width: 50px;
+        text-align: center;
+        vertical-align: bottom;
+        font-size: smaller;
+        font-weight: bolder;
+        line-height: 50px;
+    }
+
+    .timetable .timeline-container .timeline-header .timeline-header-cell.even {
+        background-color: #eeeeee;
+    }
+
+    .timetable .timeline-container .timeline-header .timeline-header-cell.odd {
+        background-color: #dddddd;
+    }
+
+    .timetable .header-padding {
+        height: 50px;
+    }
+
+    /* */
+
+    .timetable .label-container .group-header {
+    }
+
+    .timetable .timeline-container .group-header {
+        display: flex;
+        align-items: baseline;
+        margin: 0 0.5em;
+    }
+
+    /* */
+
+    .timetable .row {
+        height: 50px;
+    }
+
+    .timetable .label-container .row {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 0.5em;
+    }
+
+    .timetable .timeline-container .group {
+        overflow-x: hidden;
+    }
+
+    .timetable .timeline-container .timeline {
+        width: 1200px;
+        height: 50px;
+        background-repeat: repeat-x;
+        background-size: 50px 100%;
+    }
+
+    .timetable .timeline-container .timeline:nth-child(odd) {
+        /* background-image: url(row1.svg); */
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI1MCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjUwIiBzdHJva2U9IiNjM2MzYzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICA8bGluZSB4MT0iMjUiIHkxPSIwIiB4Mj0iMjUiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSIwIiB4Mj0iNTAiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iNzUiIHkxPSIwIiB4Mj0iNzUiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iMTAwIiB5MT0iMCIgeDI9IjEwMCIgeTI9IjUwIiBzdHJva2U9IiNjM2MzYzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+Cjwvc3ZnPg==);
+    }
+
+    .timetable .timeline-container .timeline:nth-child(even) {
+        /* background-image: url(row2.svg); */
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI1MCIgZmlsbD0iI2Y0ZjRmNCIvPgogICAgPGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjUwIiBzdHJva2U9IiNjM2MzYzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICA8bGluZSB4MT0iMjUiIHkxPSIwIiB4Mj0iMjUiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSIwIiB4Mj0iNTAiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iNzUiIHkxPSIwIiB4Mj0iNzUiIHkyPSI1MCIgc3Ryb2tlPSIjZTVlNWU1Ii8+CiAgICA8bGluZSB4MT0iMTAwIiB5MT0iMCIgeDI9IjEwMCIgeTI9IjUwIiBzdHJva2U9IiNjM2MzYzMiIHN0cm9rZS13aWR0aD0iMi41Ii8+Cjwvc3ZnPg==);
+    }
+
+    .timetable .timeline-container .timeline .time-entry {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 2px;
+        height: 44px;
+        z-index: 1;
+        background-color: #dddddd;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #bbbbbb;
+    }
+
+    .timetable .timeline-container .timeline .time-entry .time-entry-content {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        text-overflow: ellipsis;
+        text-align: center;
+        font-size: 10pt;
+        color: black;
+    }
+</style>
