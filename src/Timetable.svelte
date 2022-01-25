@@ -277,6 +277,7 @@
         border-style: solid;
         border-width: 1px;
         border-color: #bbbbbb;
+        cursor: pointer;
     }
 
     .timetable .timeline-container .timeline .time-entry .time-entry-content {
@@ -288,5 +289,6 @@
         text-align: center;
         font-size: 10pt;
         color: black;
+        user-select: none;
     }
 </style>
