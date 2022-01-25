@@ -1,10 +1,12 @@
-<script>
+<script lang="ts">
     import moment from 'moment';
     import ResizeObserver from 'svelte-resize-observer';
 
+    import {Entity, Entry, Group} from './Timetable';
+
     export let options = {};
 
-    let el;
+    let el: HTMLElement;
     let hours = [];
     let groups = [];
     let containerWidth = null;
@@ -31,71 +33,6 @@
     $: {
         if ((containerWidth !== null) && (labelWidth !== null)) {
             timelineWidth = containerWidth - labelWidth;
-        }
-    }
-
-    class Group {
-
-        constructor(name) {
-            this.name = name;
-            this.entities = [];
-        }
-
-        getEntity(name) {
-            for (let i = 0; i < this.entities.length; i++) {
-                const entity = this.entities[i];
-                if (entity.name === name) {
-                    return entity;
-                }
-            }
-            return null;
-        }
-
-        addEntity(name) {
-            let entity = this.getEntity(name);
-            if (entity === null) {
-                entity = new Entity(name);
-                this.entities.push(entity);
-                this.entities = [...this.entities];
-            }
-            return entity;
-        }
-    }
-
-    class Entity {
-
-        constructor(name) {
-            this.name = name;
-            this.entries = [];
-        }
-
-        addEntry(entry) {
-            this.entries.push(entry);
-        }
-    }
-
-    class Entry {
-
-        constructor(startTime, duration, text) {
-            this._startTime = moment(startTime, "HH:mm");
-            this._duration = moment.duration(duration);
-            if (!this._startTime.isValid()) {
-                throw "invalid startTime";
-            }
-            if (!this._duration.isValid()) {
-                throw "invalid duration";
-            }
-            this.startTime = startTime;
-            this.duration = duration;
-            this.text = text;
-        }
-
-        getLeft() {
-            return ((this._startTime.hours() + this._startTime.minutes() / 60) * 100 / 24) + '%';
-        }
-
-        getWidth() {
-            return (this._duration.asHours() * 100 / 24) + '%';
         }
     }
 
@@ -150,23 +87,36 @@
         return m.format("HHmm");
     }
 
-    function onScroll(scrollLeft) {
+    function onScroll(e: UIEvent) {
         if (!el) {
             return;
         }
         const els = el.getElementsByClassName("group");
         for (let i = 0; i < els.length; i++) {
             const groupEl = els[i];
-            groupEl.scrollLeft = scrollLeft;
+            const target = e.target;
+            if (target instanceof HTMLDivElement) {
+                groupEl.scrollLeft = target.scrollLeft;
+            }
         }
+    }
+
+    function onContainerResize(e: UIEvent) {
+        // TODO
+        //containerWidth = e.detail.target.clientWidth
+    }
+
+    function onLabelResize(e: UIEvent) {
+        // TODO
+        //labelWidth = e.detail.target.clientWidth
     }
 </script>
 
 <div bind:this={el} class="timetable">
-    <ResizeObserver on:resize={e => containerWidth = e.detail.target.clientWidth}/>
+    <ResizeObserver on:resize={e => onLabelResize(e)}/>
     <div class="timetable-container">
         <div class="label-container">
-            <ResizeObserver on:resize={e => labelWidth = e.detail.target.clientWidth}/>
+            <ResizeObserver on:resize={e => onLabelResize(e)}/>
             <div class="header">
             </div>
             <div class="header-padding">
@@ -183,7 +133,7 @@
         </div>
         <div class="timeline-container">
             <div class="header" style="width: {timelineWidth}px;"
-                 on:scroll={e => onScroll(e.target.scrollLeft)}>
+                 on:scroll={e => onScroll(e)}>
                 <div class="timeline-header">
                     {#each hours as hour}
                         <div class="timeline-header-cell">
