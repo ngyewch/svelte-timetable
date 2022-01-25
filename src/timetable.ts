@@ -1,6 +1,13 @@
-import {parse} from 'date-fns';
+import {format, parse} from 'date-fns';
 import type {Duration} from 'date-fns';
 import * as duration from 'duration-fns';
+
+export interface EntryClickedEvent {
+    rightClick: boolean;
+    group: Group;
+    entity: Entity;
+    entry: Entry;
+}
 
 export class Time {
     _hour: number;
@@ -23,6 +30,27 @@ export class Time {
 
     minutes(): number {
         return this._minute;
+    }
+
+    addDuration(d: Duration): Time {
+        let hour = this._hour;
+        let minute = this._minute;
+        if (d.minutes) {
+            minute += d.minutes;
+        }
+        hour += Math.floor(minute / 60);
+        minute = minute % 60;
+        if (d.hours) {
+            hour += d.hours;
+        }
+        hour = hour % 24;
+        return new Time(hour, minute);
+    }
+
+    toString(): string {
+        const d = new Date();
+        d.setHours(this._hour, this._minute, 0, 0);
+        return format(d, 'HH:mm');
     }
 
     static fromString(s: string): Time {
@@ -76,6 +104,7 @@ export class Entry {
     duration: string;
     text: string;
     _startTime: Time;
+    _endTime: Time;
     _duration: Duration;
 
     constructor(startTime: string, durationSpec: string, text: string) {
@@ -84,6 +113,19 @@ export class Entry {
         this.startTime = startTime;
         this.duration = durationSpec;
         this.text = text;
+        this._endTime = this._startTime.addDuration(this._duration);
+    }
+
+    getStartTime(): Time {
+        return this._startTime;
+    }
+
+    getEndTime(): Time {
+        return this._endTime;
+    }
+
+    getDuration(): Duration {
+        return this._duration;
     }
 
     getLeft(): string {

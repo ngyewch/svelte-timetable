@@ -1,12 +1,15 @@
 <script lang="ts">
+    import {createEventDispatcher} from 'svelte';
     import {format} from 'date-fns';
     import ResizeObserver from 'svelte-resize-observer';
 
-    import type {Group} from './timetable';
+    import type {EntryClickedEvent, Group, Entity, Entry} from './timetable';
 
     export let startHour: number = 0;
     export let endHour: number = 0;
     export let groups: Group[] = [];
+
+    const dispatch = createEventDispatcher();
 
     let el: HTMLElement;
     let hours: number[] = [];
@@ -66,6 +69,31 @@
             labelWidth = detail.clientWidth;
         }
     }
+
+    function onClick(e: PointerEvent, group: Group, entity: Entity, entry: Entry) {
+        const detail: EntryClickedEvent = {
+            rightClick: false,
+            group: group,
+            entity: entity,
+            entry: entry,
+        };
+        dispatch('entryClicked', detail);
+    }
+
+    function onContextMenu(e: PointerEvent, group: Group, entity: Entity, entry: Entry) {
+        e.preventDefault();
+        const detail: EntryClickedEvent = {
+            rightClick: true,
+            group: group,
+            entity: entity,
+            entry: entry,
+        };
+        dispatch('entryClicked', detail);
+    }
+
+    function getPopupText(entry: Entry): string {
+        return `${entry.getStartTime().toString()} - ${entry.getEndTime().toString()} ${entry.text}`;
+    }
 </script>
 
 <div bind:this={el} class="timetable">
@@ -108,7 +136,10 @@
                     {#each group.entities as entity}
                         <div class="timeline">
                             {#each entity.entries as entry}
-                                <div class="time-entry" style="left: {entry.getLeft()}; width: {entry.getWidth()};">
+                                <div class="time-entry" style="left: {entry.getLeft()}; width: {entry.getWidth()};"
+                                     on:click={(e) => onClick(e, group, entity, entry)}
+                                     on:contextmenu={(e) => onContextMenu(e, group, entity, entry)}
+                                     title={getPopupText(entry)}>
                                     <div class="time-entry-content">
                                         {entry.text}
                                     </div>
