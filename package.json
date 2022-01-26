@@ -11,6 +11,7 @@
   "svelte": "src/index.ts",
   "module": "dist/svelte-timetable.umd.js",
   "main": "dist/svelte-timetable.es.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "compile": "cross-env vite build",
     "check": "svelte-check --human && tsc --noEmit",
