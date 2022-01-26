@@ -253,6 +253,7 @@
         height: 50px;
         background-repeat: repeat-x;
         background-size: 50px 100%;
+        position: relative;
     }
 
     .timetable .timeline-container .timeline:nth-child(odd) {
@@ -269,7 +270,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative;
+        position: absolute;
         top: 2px;
         height: 44px;
         z-index: 1;

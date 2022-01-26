@@ -12,7 +12,9 @@
                 .addEntry(new Entry('05:00', 'PT1H', 'test1 this includes some pretty long detail'))
             )
             .addEntity(new Entity('entity1_2')
-                .addEntry(new Entry('07:30', 'PT3H20M', 'test2'))
+                .addEntry(new Entry('07:30', 'PT3H20M', 'test2.1'))
+                .addEntry(new Entry('12:00', 'PT2H15M', 'test2.2'))
+                .addEntry(new Entry('16:45', 'PT2H', 'test2.3'))
             )
             .addEntity(new Entity('entity1_3'))
     );
