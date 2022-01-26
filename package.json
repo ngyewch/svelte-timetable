@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/ngyewch/svelte-timetable.git"
   },
-  "svelte": "src/index.js",
+  "svelte": "src/index.ts",
   "module": "dist/svelte-timetable.umd.js",
   "main": "dist/svelte-timetable.es.js",
   "scripts": {
