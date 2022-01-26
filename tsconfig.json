@@ -5,6 +5,7 @@
     "dist"
   ],
   "compilerOptions": {
+    "sourceMap": true,
     "types": [
       "svelte"
     ]
