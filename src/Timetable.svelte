@@ -70,7 +70,7 @@
         }
     }
 
-    function onClick(e: PointerEvent, group: Group, entity: Entity, entry: Entry) {
+    function onClick(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
         const detail: EntryClickedEvent = {
             rightClick: false,
             group: group,
@@ -80,7 +80,7 @@
         dispatch('entryClicked', detail);
     }
 
-    function onContextMenu(e: PointerEvent, group: Group, entity: Entity, entry: Entry) {
+    function onContextMenu(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
         e.preventDefault();
         const detail: EntryClickedEvent = {
             rightClick: true,
