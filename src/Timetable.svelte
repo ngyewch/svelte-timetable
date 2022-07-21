@@ -158,7 +158,7 @@
         font-family: sans-serif;
         overflow-x: hidden;
         overflow-y: auto;
-        max-height: 100vh;
+        max-height: 100%;
     }
 
     .timetable .timetable-container {
