@@ -1,40 +1,23 @@
 version: 3
 
 tasks:
-  #clean:
-  #  desc: Clean
-  #  cmds:
-  #    - rm -rf dist
+  clean:
+    desc: Clean
+    cmds:
+      - rm -rf dist
 
   install:
     cmds:
       - pnpm install
       - pnpm prune
-    sources:
-      - package.json
-    generates:
-      - pnpm-lock.yaml
 
-  #build:
-  #  desc: Build
-  #  deps: [ install ]
-  #  cmds:
-  #    - pnpm build
-  #  sources:
-  #    - package.json
-  #    - pnpm-lock.yaml
-  #    - public/*
-  #    - public/**/*
-  #    - postcss.config.js
-  #    - src/*
-  #    - src/**/*
-  #    - tsconfig.json
-  #    - vite.config.js
-  #  generates:
-  #    - dist/*
-  #    - dist/**/*
+  build:
+    desc: Build
+    deps: [ install ]
+    cmds:
+      - pnpm build
 
-  #run:
-  #  deps: [ install ]
-  #  cmds:
-  #    - npm run dev
+  run:
+    deps: [ install ]
+    cmds:
+      - pnpm run storybook
