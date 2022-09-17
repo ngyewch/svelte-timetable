@@ -79,7 +79,11 @@
             entity: entity,
             entry: entry,
         };
-        dispatch('entryClicked', detail);
+        if (entry !== null) {
+            dispatch('entryClicked', detail);
+        } else {
+            dispatch('entityClicked', detail);
+        }
     }
 
     function onContextMenu(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
@@ -91,7 +95,11 @@
             entity: entity,
             entry: entry,
         };
-        dispatch('entryClicked', detail);
+        if (entry !== null) {
+            dispatch('entryClicked', detail);
+        } else {
+            dispatch('entityClicked', detail);
+        }
     }
 
     function getPopupText(entry: Entry): string {

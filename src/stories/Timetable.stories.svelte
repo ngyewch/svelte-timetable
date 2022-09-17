@@ -59,7 +59,7 @@
 
 <!-- More on component templates: https://storybook.js.org/docs/svelte/writing-stories/introduction#using-args -->
 <Template let:args>
-    <Timetable {...args} on:entryClicked={action('eventClicked')}/>
+    <Timetable {...args} on:entryClicked={action('eventClicked')} on:entityClicked={action('entityClicked')}/>
 </Template>
 
 <!-- More on args: https://storybook.js.org/docs/svelte/writing-stories/args -->
