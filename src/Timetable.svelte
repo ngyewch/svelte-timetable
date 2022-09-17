@@ -71,6 +71,8 @@
     }
 
     function onClick(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
+        e.preventDefault();
+        e.cancelBubble = true;
         const detail: EntryClickedEvent = {
             rightClick: false,
             group: group,
@@ -82,6 +84,7 @@
 
     function onContextMenu(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
         e.preventDefault();
+        e.cancelBubble = true;
         const detail: EntryClickedEvent = {
             rightClick: true,
             group: group,
@@ -134,7 +137,9 @@
                 </div>
                 <div class="group" style="width: {timelineWidth}px;">
                     {#each group.entities as entity}
-                        <div class="timeline">
+                        <div class="timeline"
+                             on:click={(e) => onClick(e, group, entity, null)}
+                             on:contextmenu={(e) => onContextMenu(e, group, entity, null)}>
                             {#each entity.entries as entry}
                                 <div class="time-entry" style="left: {entry.getLeft()}; width: {entry.getWidth()};"
                                      on:click={(e) => onClick(e, group, entity, entry)}
