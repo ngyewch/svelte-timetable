@@ -9,6 +9,12 @@ export interface EntryClickedEvent {
     entry: Entry;
 }
 
+export interface EntityClickedEvent {
+    rightClick: boolean;
+    group: Group;
+    entity: Entity;
+}
+
 export class Time {
     _hour: number;
     _minute: number;

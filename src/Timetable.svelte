@@ -3,7 +3,7 @@
     import {format} from 'date-fns';
     import ResizeObserver from 'svelte-resize-observer';
 
-    import type {EntryClickedEvent, Group, Entity, Entry} from './timetable';
+    import type {EntryClickedEvent, EntityClickedEvent, Group, Entity, Entry} from './timetable';
 
     export let startHour: number = 0;
     export let endHour: number = 0;
@@ -73,15 +73,20 @@
     function onClick(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
         e.preventDefault();
         e.cancelBubble = true;
-        const detail: EntryClickedEvent = {
-            rightClick: false,
-            group: group,
-            entity: entity,
-            entry: entry,
-        };
         if (entry !== null) {
+            const detail: EntryClickedEvent = {
+                rightClick: false,
+                group: group,
+                entity: entity,
+                entry: entry,
+            };
             dispatch('entryClicked', detail);
         } else {
+            const detail: EntityClickedEvent = {
+                rightClick: false,
+                group: group,
+                entity: entity,
+            };
             dispatch('entityClicked', detail);
         }
     }
@@ -89,15 +94,20 @@
     function onContextMenu(e: MouseEvent, group: Group, entity: Entity, entry: Entry) {
         e.preventDefault();
         e.cancelBubble = true;
-        const detail: EntryClickedEvent = {
-            rightClick: true,
-            group: group,
-            entity: entity,
-            entry: entry,
-        };
         if (entry !== null) {
+            const detail: EntryClickedEvent = {
+                rightClick: true,
+                group: group,
+                entity: entity,
+                entry: entry,
+            };
             dispatch('entryClicked', detail);
         } else {
+            const detail: EntityClickedEvent = {
+                rightClick: true,
+                group: group,
+                entity: entity,
+            };
             dispatch('entityClicked', detail);
         }
     }
