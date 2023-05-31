@@ -53,3 +53,32 @@ tasks:
       - src/stories/*
     generates:
       - build/histoire/*
+
+  site-build:
+    desc: Site - Build
+    deps: [ story-build ]
+    cmds:
+      - rm -rf build/site
+      - mkdir -p build/site/svelte-timetable
+      - cp -r build/histoire/* build/site/svelte-timetable/
+      - touch build/site/svelte-timetable/.nojekyll
+    generates:
+      - build/site/*
+
+  site-serve:
+    desc: Site - Serve
+    deps: [ site-build ]
+    cmds:
+      - pnpm dlx sirv-cli@0.4.6 --cors --port 8080 build/site
+
+  site-publish:
+    desc: Site - Publish
+    deps: [ site-build ]
+    cmds:
+      - gh-pages --dotfiles --dist build/site/svelte-timetable
+
+  npm-publish:
+    desc: NPM - Publish
+    deps: [ build ]
+    cmds:
+      - pnpm publish --access public
