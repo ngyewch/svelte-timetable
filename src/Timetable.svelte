@@ -1,7 +1,6 @@
 <script lang="ts">
-    import {createEventDispatcher} from 'svelte';
+    import {createEventDispatcher, onDestroy, onMount} from 'svelte';
     import {format} from 'date-fns';
-    import ResizeObserver from 'svelte-resize-observer';
 
     import type {EntryClickedEvent, EntityClickedEvent, Group, Entity, Entry} from './timetable';
 
@@ -11,11 +10,39 @@
 
     const dispatch = createEventDispatcher();
 
-    let el: HTMLElement;
+    let containerElement: HTMLElement;
+    let labelContainerElement: HTMLElement;
     let hours: number[] = [];
     let containerWidth: number | null = null;
     let labelWidth: number | null = null;
     let timelineWidth: number | null = null;
+    let containerResizeObserver: ResizeObserver;
+    let labelResizeObserver: ResizeObserver;
+
+    onMount(() => {
+        containerResizeObserver = new ResizeObserver((entries, observer) => {
+            onContainerResize(new CustomEvent('resize', {
+                detail: containerElement,
+            }));
+        });
+        containerResizeObserver.observe(containerElement);
+
+        labelResizeObserver = new ResizeObserver((entries, observer) => {
+            onLabelResize(new CustomEvent('resize', {
+                detail: labelContainerElement,
+            }));
+        });
+        labelResizeObserver.observe(labelContainerElement);
+    });
+
+    onDestroy(() => {
+        if (containerResizeObserver) {
+            containerResizeObserver.disconnect();
+        }
+        if (labelResizeObserver) {
+            labelResizeObserver.disconnect();
+        }
+    });
 
     $: {
         if (isNaN(startHour) || (startHour < 0) || (startHour > 23)) {
@@ -43,10 +70,10 @@
     }
 
     function onScroll(e: Event) {
-        if (!el) {
+        if (!containerElement) {
             return;
         }
-        const els = el.getElementsByClassName("group");
+        const els = containerElement.getElementsByClassName("group");
         for (let i = 0; i < els.length; i++) {
             const groupEl = els[i];
             const target = e.target;
@@ -117,11 +144,9 @@
     }
 </script>
 
-<div bind:this={el} class="timetable">
-    <ResizeObserver on:resize={e => onContainerResize(e)}/>
+<div bind:this={containerElement} class="timetable">
     <div class="timetable-container">
-        <div class="label-container">
-            <ResizeObserver on:resize={e => onLabelResize(e)}/>
+        <div bind:this={labelContainerElement} class="label-container">
             <div class="header">
             </div>
             <div class="header-padding">

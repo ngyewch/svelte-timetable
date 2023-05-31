@@ -135,7 +135,7 @@ export class Entry {
     }
 
     getLeft(): string {
-        return ((this._startTime.hours() + this._startTime.minutes() / 60) * 100 / 24) + '%';
+        return `${((this._startTime.hours() + this._startTime.minutes() / 60) * 100 / 24)}%`;
     }
 
     getWidth(): string {
@@ -149,6 +149,6 @@ export class Entry {
         if (this._duration.seconds) {
             hours += this._duration.seconds / (60 * 60);
         }
-        return (hours * 100 / 24) + '%';
+        return `${(hours * 100 / 24)}%`;
     }
 }
