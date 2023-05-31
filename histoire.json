@@ -1,0 +1,69 @@
+{
+  "stories": [
+    {
+      "id": "src-stories-timetable-story-svelte",
+      "title": "Timetable",
+      "group": "usage",
+      "layout": {
+        "type": "single",
+        "iframe": true
+      },
+      "icon": null,
+      "iconColor": null,
+      "docsOnly": false,
+      "variants": [
+        {
+          "id": "_default",
+          "title": "default"
+        }
+      ],
+      "relativePath": "src/stories/Timetable.story.svelte",
+      "supportPluginId": "svelte3",
+      "treePath": [
+        "Timetable"
+      ],
+      "virtual": false,
+      "markdownFile": null
+    },
+    {
+      "id": "src-stories-introduction-story-js",
+      "title": "Introduction",
+      "group": "top",
+      "layout": {
+        "type": "single",
+        "iframe": true
+      },
+      "icon": "carbon:bookmark",
+      "docsOnly": true,
+      "variants": [],
+      "relativePath": "src/stories/Introduction.story.js",
+      "supportPluginId": "vanilla",
+      "treePath": [
+        "Introduction"
+      ],
+      "virtual": true,
+      "markdownFile": {
+        "id": "src-stories-introduction-story-md",
+        "relativePath": "src/stories/Introduction.story.md",
+        "isRelatedToStory": false,
+        "frontmatter": {
+          "title": "Introduction",
+          "group": "top",
+          "icon": "carbon:bookmark"
+        }
+      }
+    }
+  ],
+  "markdownFiles": [
+    {
+      "id": "src-stories-introduction-story-md",
+      "relativePath": "src/stories/Introduction.story.md",
+      "isRelatedToStory": false,
+      "frontmatter": {
+        "title": "Introduction",
+        "group": "top",
+        "icon": "carbon:bookmark"
+      }
+    }
+  ]
+}
